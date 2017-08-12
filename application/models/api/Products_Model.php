@@ -8,6 +8,9 @@ class Products_Model extends CI_Model{
     }
 
 
+
+
+
     public function getAllProducts(){
 
         $productArray = $this->db->get("products")->result_array();
@@ -20,10 +23,28 @@ class Products_Model extends CI_Model{
 
         }
 
+        //clean string by removing "product_" when giving out
         return $products;
 
     }
 
+    public function getProductById($index){
 
+        $query = $this->db->get_where("products",array("product_id"=>$index));
+        return $query->row_array();
+        
+    }
+
+
+    public function hasProduct($index){
+
+        $query = $this->db->get_where("products",array("product_id"=>$index));
+        if($this->db->affected_rows()>0){
+            return true;
+        }
+
+        return false;
+
+    }
 
 }
