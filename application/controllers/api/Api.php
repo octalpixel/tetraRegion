@@ -5,18 +5,43 @@ require APPPATH. "libraries/Requests.php";
  class Api extends REST_Controller{
 
 
-    public function index_get(){
+    public function base64toUrl($baseString){
+            
+            $fileName = "assets/" . rand() . ".jpg";
+            file_put_contents("./" . $fileName,base64_decode($baseString));
+            return base_url($fileName);
+            //return $fileName;
+    }
+
+    public function search_get(){
+        //$this->response("this is a test");
+        
+    }
+
+
+    public function search_post(){
+
+            $baseImage = $this->post();
+            //$this->response($baseImage['base']);            
+            $imgUrl = $this->base64toUrl($baseImage['base']);
+            $this->response($imgUrl);
+            $data =  $this->matchFinder($imgUrl);
+            $this->response($data);
+
+    }
+
+    public function matchFinder($imgURL){
         
 
         //$imgURL = "https://image.ibb.co/gBqWsF/Whats_App_Image_2017_08_12_at_7_48_57_PM.jpg";
-        $imgURL = "https://image.ibb.co/kiuwRa/Whats_App_Image_2017_08_12_at_9_53_48_PM.jpg";
+        //$imgURL = "https://image.ibb.co/kiuwRa/Whats_App_Image_2017_08_12_at_9_53_48_PM.jpg";
 
         Requests::register_autoloader();
 
         //$this->response("Test");
         $url = 'https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/analyze?visualFeatures=Categories,Description,Color';
         $headers = array('Content-Type' => 'application/json','Ocp-Apim-Subscription-Key'=> "56badec883f04a1e8a01638ace97e24e");
-        $data = array('url' => 'https://riverisland.scene7.com/is/image/RiverIsland/291357_main?$CrossSellProductPage514$');
+        $data = array('url' => $imgURL);
         $response = Requests::post($url, $headers, json_encode($data));
         //var_dump($response);
         
