@@ -1,0 +1,12 @@
+application: cloudhack-176604
+runtime: php55
+api_version: 1
+version: 1
+
+handlers:
+
+- url: /user_guide
+static_dir: user_guide
+
+- url: /.*
+script: index.php

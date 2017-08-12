@@ -75,10 +75,11 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	=> '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
+	'hostname' => '35.198.113.61',
+	'username' => 'cloudhack',
+	'password' => 'imanjana',
 	'database' => 'cloudhack',
+    'socket'   => '/cloudsql/cloudhack-176604:cloudhack',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',
 	'pconnect' => FALSE,
