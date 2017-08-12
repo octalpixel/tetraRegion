@@ -35,6 +35,41 @@ class Products_Model extends CI_Model{
         
     }
 
+    
+
+
+    public function getProductByImage($tag,$hasMore =false){
+
+        $results = $this->db->get_where("products",array("product_tags"=>$tag));
+
+        if(!$hasMore){
+            $item = $results->row_array();
+            $product =array();
+            $product['item'] =$item;
+            $showroom = $this->getShowroomById($item['showroom_id']);
+            $product['showroom']=$showroom;
+
+            return $product;
+
+        }else{
+            //show this out also not done;
+            return $results->result_array();
+        }
+
+
+
+    }
+
+
+
+    public function getShowroomById($showroom_id){
+
+            //assuming that store is there,check is done in the controller
+
+            $showroom = $this->db->get_where("showrooms",array("showroom_id"=>$showroom_id));
+            return $showroom->row_array();
+
+    }
 
     public function hasProduct($index){
 

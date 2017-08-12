@@ -8,7 +8,8 @@ require APPPATH. "libraries/Requests.php";
     public function index_get(){
         
 
-        $imgURL = "https://image.ibb.co/gBqWsF/Whats_App_Image_2017_08_12_at_7_48_57_PM.jpg";
+        //$imgURL = "https://image.ibb.co/gBqWsF/Whats_App_Image_2017_08_12_at_7_48_57_PM.jpg";
+        $imgURL = "https://image.ibb.co/kiuwRa/Whats_App_Image_2017_08_12_at_9_53_48_PM.jpg";
 
         Requests::register_autoloader();
 
@@ -40,8 +41,81 @@ require APPPATH. "libraries/Requests.php";
 
         $customResponse = Requests::post($customUrl, $customHeader, json_encode($imageUploadData));
         $body = json_decode($customResponse->body,true);
-        $this->response($body);
-        $this->response($returnTags);
+        //$this->response(max($body['Predictions']['Probability']));
+        
+       $getCount = count($body['Predictions']);
+    
+        $predictionresults = $body['Predictions'];
+        $maxResults = array();
+        $maxValue = 0;
+        $maxTag = "";
+
+       
+       for( $x = 0; $x < $getCount;$x++){
+            $current = $predictionresults[$x];
+            if($current['Tag'] !="front" && $current['Tag'] != "back"){
+
+                    if($current['Probability'] > $maxValue){
+                        $maxValue = $current['Probability'];
+                        $maxTag = $current['Tag'];
+                    }
+
+            }
+
+       }
+
+        $frontSide = 0;
+        $backSide = 0;
+
+        for( $x = 0; $x < $getCount;$x++){
+            $current = $predictionresults[$x];
+            if($current['Tag'] == "front"){
+                $frontSide = $current['Probability'];
+            }
+
+            if($current['Tag'] == "back"){
+                $backSide = $current['Probability'];
+            }
+        }
+
+        $sideResult =array();
+        if($backSide > $frontSide){
+            $sideResult['side'] = "back";
+            $sideResult['Probability'] = $backSide;
+        }else{
+
+            $sideResult['side'] = "front";
+            $sideResult['Probability'] = $frontSide;
+        }
+       
+        
+        $maxResults['tag'] = $maxTag;
+        $maxResults['probability'] = $maxValue;
+
+        //$this->response(array('type'=>$maxResults ,"side"=>$sideResult));
+
+
+        //$this->response($returnTags);
+        
+        /*
+            brainstroming idea => the max results probabiliy is less tat 0.8 , the loop throught he others for matches greater that 0.5 and also get the results
+
+
+        */
+        $productResults = array();
+        if($maxResults['probability']>0.8){
+
+            $products=$this->products_model->getProductByImage($maxResults['tag']);
+            $productResults['product'] = $products;
+
+        }else{
+            $products=$this->products_model->getProductByImage($maxResults['tag'],true);
+        }
+
+        $productResults['matchResult'] = array('tag'=>$maxResults ,"side"=>$sideResult,'type'=>$categories);
+
+
+        $this->response($productResults);
 
     }
 
